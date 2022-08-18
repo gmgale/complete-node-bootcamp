@@ -1,11 +1,12 @@
 const fs = require("fs");
 const http = require("http");
 const url = require("url");
+const slugify = require("slugify");
 
 // Here we use '.' for dir of current running mondule(file) instead of __dir
 const replaceTemplate = require("./modules/replaceTemplate");
 
-// Blocking, scyncronus way
+// Blocking, syncronus way
 // const textIn = fs.readFileSync('./txt/input.txt', 'utf-8');
 // console.log(textIn);
 // const textOut = `This is hat we know about the avocado ${textIn}.\nCreated on ${Date.now()}`;
@@ -50,6 +51,9 @@ const tempProduct = fs.readFileSync(
   `${__dirname}/templates/template-product.html`,
   "utf8"
 );
+
+// Unused, example of external npm pkg. Could write to json for future use
+const slugs = dataObj.map((el) => slugify(el.productName, { lower: true }));
 
 const server = http.createServer((req, res) => {
   const { query, pathname } = url.parse(req.url, true);
