@@ -1,10 +1,10 @@
-const fs = require("fs");
-const http = require("http");
-const url = require("url");
-const slugify = require("slugify");
+const fs = require('fs');
+const http = require('http');
+const url = require('url');
+const slugify = require('slugify');
 
 // Here we use '.' for dir of current running mondule(file) instead of __dir
-const replaceTemplate = require("./modules/replaceTemplate");
+const replaceTemplate = require('./modules/replaceTemplate');
 
 // Blocking, syncronus way
 // const textIn = fs.readFileSync('./txt/input.txt', 'utf-8');
@@ -36,20 +36,20 @@ const replaceTemplate = require("./modules/replaceTemplate");
 // Load templates into memory so they are not loaded on each request
 // Can use Sync here are we are running this once when the server starts,
 // if we did this in the request, it would block.
-const data = fs.readFileSync(`${__dirname}/dev-data/data.json`, "utf8");
+const data = fs.readFileSync(`${__dirname}/dev-data/data.json`, 'utf8');
 const dataObj = JSON.parse(data);
 
 const tempOverview = fs.readFileSync(
   `${__dirname}/templates/template-overview.html`,
-  "utf8"
+  'utf8'
 );
 const tempCard = fs.readFileSync(
   `${__dirname}/templates/template-card.html`,
-  "utf8"
+  'utf8'
 );
 const tempProduct = fs.readFileSync(
   `${__dirname}/templates/template-product.html`,
-  "utf8"
+  'utf8'
 );
 
 // Unused, example of external npm pkg. Could write to json for future use
@@ -59,23 +59,23 @@ const server = http.createServer((req, res) => {
   const { query, pathname } = url.parse(req.url, true);
 
   // Overview page
-  if (pathname === "/" || pathname === "/overview") {
+  if (pathname === '/' || pathname === '/overview') {
     res.writeHead(200, {
-      "Content-type": "text/html",
+      'Content-type': 'text/html',
     });
 
     const cardsHtml = dataObj
       .map((el) => replaceTemplate(tempCard, el))
-      .join("");
+      .join('');
 
-    const output = tempOverview.replace("{%PRODUCT_CARDS%}", cardsHtml);
+    const output = tempOverview.replace('{%PRODUCT_CARDS%}', cardsHtml);
     res.end(output);
   }
 
   // Product page
-  else if (pathname === "/product") {
+  else if (pathname === '/product') {
     res.writeHead(200, {
-      "Content-type": "text/html",
+      'Content-type': 'text/html',
     });
     const product = dataObj[query.id];
     const output = replaceTemplate(tempProduct, product);
@@ -84,9 +84,9 @@ const server = http.createServer((req, res) => {
   }
 
   // API
-  else if (pathname === "/api") {
+  else if (pathname === '/api') {
     res.writeHead(200, {
-      "Content-type": "application/json",
+      'Content-type': 'application/json',
     });
     res.end(data);
   }
@@ -94,13 +94,13 @@ const server = http.createServer((req, res) => {
   // Not found
   else {
     res.writeHead(404, {
-      "Content-type": "text/html",
-      "My-header": "Hello-world",
+      'Content-type': 'text/html',
+      'My-header': 'Hello-world',
     });
-    res.end("<h1>Page not found!</h1>");
+    res.end('<h1>Page not found!</h1>');
   }
 });
 
-server.listen(3000, "127.0.0.1", () => {
-  console.log("listneing to requests on port 3000");
+server.listen(3000, '127.0.0.1', () => {
+  console.log('listneing to requests on port 3000');
 });
