@@ -64,22 +64,45 @@ const writeFilePro = (path, data) => {
   });
 };
 
-readFilePro(`${__dirname}/dog.txt`)
-  .then((data) => {
-    console.log(`Breed: ${data}`);
-    // By returning the promise, we can chain on another .then
-    return superagent.get(`https://dog.ceo/api/breed/${data}/images/random`);
-  })
-  // .then only handles fuflled promises, not rejected (see .catch)
-  // the 'res' is the resolved promise of the previous handler (superagent.get)
-  .then((res) => {
-    // Again, by returning the promise, we can chain on another .then
-    return writeFilePro('dog-img.txt', res.body.message);
-  })
-  .then(() => {
+// Using promise
+// readFilePro(`${__dirname}/dog.txt`)
+//   .then((data) => {
+//     console.log(`Breed: ${data}`);
+//     // By returning the promise, we can chain on another .then
+//     return superagent.get(`https://dog.ceo/api/breed/${data}/images/random`);
+//   })
+//   // .then only handles fuflled promises, not rejected (see .catch)
+//   // the 'res' is the resolved promise of the previous handler (superagent.get)
+//   .then((res) => {
+//     // Again, by returning the promise, we can chain on another .then
+//     return writeFilePro('dog-img.txt', res.body.message);
+//   })
+//   .then(() => {
+//     console.log('Dog image saved to file.');
+//   })
+//   // Catches all rejected promises from any above promise
+//   .catch((err) => {
+//     console.log(err.message);
+//   });
+
+// Using async/await
+const getDogPic = async () => {
+  try {
+    // Waits for the resolved promise and stores it in data.
+    const data = await readFilePro(`${__dirname}/dog.txt`);
+    readFilePro(`${__dirname}/dog.txt`);
+
+    const res = await superagent.get(
+      `https://dog.ceo/api/breed/${data}/images/random`
+    );
+    console.log(res.body.message);
+
+    await writeFilePro('dog-img.txt', res.body.message);
     console.log('Dog image saved to file.');
-  })
-  // Catches all rejected promises from any above promise
-  .catch((err) => {
-    console.log(err.message);
-  });
+  } catch (err) {
+    // Use try/catch to catch errors for async/await
+    console.log(err);
+  }
+};
+
+getDogPic();
