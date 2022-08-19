@@ -1,4 +1,5 @@
 const fs = require('fs');
+const { get } = require('http');
 const superagent = require('superagent');
 
 // // Example of nested callbacks
@@ -101,8 +102,71 @@ const getDogPic = async () => {
     console.log('Dog image saved to file.');
   } catch (err) {
     // Use try/catch to catch errors for async/await
-    console.log(err);
+    console.log(err.message);
+    throw err;
   }
+  return 'READY';
 };
 
-getDogPic();
+//
+// console.log('Getting dog pics');
+// // getDogPic();
+// console.log('Finished getting pics!');
+// // ^^^ this line prints before getDogPic() has finished!
+// // If we want to wait for the return value, we use .then as async is really a promise
+//
+// // However now the promise will always resolve fufilled.
+// // We re-throw the error in the .catch
+// getDogPic()
+//   .then((x) => {
+//     console.log(x);
+//   })
+//   .catch((err) => {
+//     // Catching re-throw from async try/catch
+//     console.log(err.message);
+//   });
+
+// the above mixes async and promises using .then etc...
+/* IFFE Pattern 
+(() => {
+
+})();
+*/
+
+// Use this...
+(async () => {
+  try {
+    console.log('Getting dog pics');
+    const x = await getDogPic();
+    console.log(x);
+    console.log('Finished getting pics!');
+  } catch (err) {
+    console.log(err);
+  }
+})();
+
+// Waiting/running muliple promises at the same time
+// Store the pending promise in a vaiable
+const getDogPic2 = async () => {
+  try {
+    const data = await readFilePro(`${__dirname}/dog.txt`);
+    const res1Pro = superagent.get(
+      `https://dog.ceo/api/breed/${data}/images/random`
+    );
+    const res2Pro = superagent.get(
+      `https://dog.ceo/api/breed/${data}/images/random`
+    );
+    const res3Pro = superagent.get(
+      `https://dog.ceo/api/breed/${data}/images/random`
+    );
+    // Run all 3 promises at the same time
+    const all = await Promise.all([res1Pro, res2Pro, res3Pro]);
+    const imgs = all.map((el) => el.body.message);
+
+    console.log(imgs);
+
+    await writeFilePro('dog-img.txt', imgs.join('\n'));
+  } catch (err) {}
+};
+
+getDogPic2();
