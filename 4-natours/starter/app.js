@@ -46,6 +46,7 @@ app.post('/api/v1/tours', (req, res) => {
     JSON.stringify(tours),
     (err) => {
       // .json sends the request so no need to use app.send();
+      // // 201 = updated
       res.status(201).json({
         status: 'success',
         data: {
@@ -78,6 +79,57 @@ app.get('/api/v1/tours/:id', (req, res) => {
     },
   });
 });
+
+// patch is used were the client sends just the info to be updated, not all.
+app.patch('/api/v1/tours/:id', (req, res) => {
+  if (req.params.id * 1 > tours.length) {
+    return res.status(200).json({
+      status: 'fail',
+      message: 'Invalid ID',
+    });
+  }
+  // patch logic goes here...
+  res.status(200).json({
+    status: 'success',
+    data: {
+      tour: '<updated tour here>',
+    },
+  });
+});
+
+// put is used were the client has to send all the info to be updated.
+app.put('/api/v1/tours/:id', (req, res) => {
+  if (req.params.id * 1 > tours.length) {
+    return res.status(404).json({
+      status: 'fail',
+      message: 'Invalid ID',
+    });
+  }
+  // put logic goes here...
+  res.status(200).json({
+    status: 'success',
+    data: {
+      tour: '<updated tour here>',
+    },
+  });
+});
+
+app.delete('/api/v1/tours/:id', (req, res) => {
+  if (req.params.id * 1 > tours.length) {
+    return res.status(404).json({
+      status: 'fail',
+      message: 'Invalid ID',
+    });
+  }
+  // put logic goes here...
+  res.status(204).json({
+    status: 'success',
+    data: {
+      tour: 'null',
+    },
+  });
+});
+
 const port = 3000;
 app.listen(port, () => {
   console.log(`App running on port ${port}.`);
