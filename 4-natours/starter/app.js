@@ -45,12 +45,13 @@ app.post('/api/v1/tours', (req, res) => {
     `${__dirname}/dev-data/data/tours-simple.json`,
     JSON.stringify(tours),
     (err) => {
+      // .json sends the request so no need to use app.send();
       res.status(201).json({
         status: 'success',
         data: {
           tour: newTour,
         },
-      }); // Created new
+      });
     }
   );
 });
