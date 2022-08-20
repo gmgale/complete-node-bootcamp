@@ -5,27 +5,12 @@ const app = express();
 
 // Middleware
 app.use(express.json());
-
-// app.get('/', (req, res) => {
-//   res
-//     .status(200)
-//     // Express auto sets Content-type: application/json wjem we use .json
-//     .json({ message: 'Hello from the server side', app: 'Natours' });
-// });
-//
-// app.post('/', (req, res) => {
-//     res
-//         .status(200)
-//         .send("You can post to this endpoint.")
-// })
-
 // Read data before event loop
-
 const tours = JSON.parse(
   fs.readFileSync(`${__dirname}/dev-data/data/tours-simple.json`)
 );
 
-app.get('/api/v1/tours', (req, res) => {
+const getAllTours = (req, res) => {
   res.status(200).json({
     status: 'success',
     results: tours.length,
@@ -33,9 +18,9 @@ app.get('/api/v1/tours', (req, res) => {
       tours: tours,
     },
   });
-});
+};
 
-app.post('/api/v1/tours', (req, res) => {
+const createTour = (req, res) => {
   //  console.log(req.body);
   const newId = tours[tours.length - 1].id + 1;
   const newTour = Object.assign({ id: newId }, req.body);
@@ -55,9 +40,9 @@ app.post('/api/v1/tours', (req, res) => {
       });
     }
   );
-});
+};
 
-app.get('/api/v1/tours/:id', (req, res) => {
+const getTour = (req, res) => {
   // req.params will parse :id into an Object. Can also have /:x/:y/:z that will
   // be split into the object but are manadtory in the URL and will throw err.
   // /x? will make it optional. /api/.../:id/:y?/:z?
@@ -78,10 +63,9 @@ app.get('/api/v1/tours/:id', (req, res) => {
       tour,
     },
   });
-});
+};
 
-// patch is used were the client sends just the info to be updated, not all.
-app.patch('/api/v1/tours/:id', (req, res) => {
+updateTour = (req, res) => {
   if (req.params.id * 1 > tours.length) {
     return res.status(200).json({
       status: 'fail',
@@ -95,10 +79,9 @@ app.patch('/api/v1/tours/:id', (req, res) => {
       tour: '<updated tour here>',
     },
   });
-});
+};
 
-// put is used were the client has to send all the info to be updated.
-app.put('/api/v1/tours/:id', (req, res) => {
+const updateWholeTour = (req, res) => {
   if (req.params.id * 1 > tours.length) {
     return res.status(404).json({
       status: 'fail',
@@ -112,23 +95,39 @@ app.put('/api/v1/tours/:id', (req, res) => {
       tour: '<updated tour here>',
     },
   });
-});
+};
 
-app.delete('/api/v1/tours/:id', (req, res) => {
+const deleteTour = (req, res) => {
   if (req.params.id * 1 > tours.length) {
     return res.status(404).json({
       status: 'fail',
       message: 'Invalid ID',
     });
   }
-  // put logic goes here...
+  // delete logic goes here...
   res.status(204).json({
     status: 'success',
     data: {
       tour: 'null',
     },
   });
-});
+};
+
+// app.get('/api/v1/tours', getAllTours);
+// app.post('/api/v1/tours', createTour);
+// app.get('/api/v1/tours/:id', getTour);
+// app.patch('/api/v1/tours/:id', updateTour);
+// app.put('/api/v1/tours/:id', updateWholeTour);
+// app.delete('/api/v1/tours/:id', deleteTour);
+
+app.route('/api/v1/tours').get(getAllTours).post(createTour);
+
+app
+  .route('/api/v1/tours/:id')
+  .get(getTour)
+  .patch(updateTour)
+  .put(updateWholeTour)
+  .delete(deleteTour);
 
 const port = 3000;
 app.listen(port, () => {
