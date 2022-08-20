@@ -5,15 +5,29 @@ const app = express();
 
 // Middleware
 app.use(express.json());
+
+// Will be called on everyrequest, has to before the routing as the routes end the request/responce cycle.
+app.use((req, res, next) => {
+  console.log('Hello from the middleware!');
+  next();
+});
+
+app.use((req, res, next) => {
+  req.requestTime = new Date().toISOString();
+  next();
+});
+
 // Read data before event loop
 const tours = JSON.parse(
   fs.readFileSync(`${__dirname}/dev-data/data/tours-simple.json`)
 );
 
 const getAllTours = (req, res) => {
+  console.log(req.requestTime);
   res.status(200).json({
     status: 'success',
     results: tours.length,
+    date: req.requestTime,
     data: {
       tours: tours,
     },
@@ -46,7 +60,6 @@ const getTour = (req, res) => {
   // req.params will parse :id into an Object. Can also have /:x/:y/:z that will
   // be split into the object but are manadtory in the URL and will throw err.
   // /x? will make it optional. /api/.../:id/:y?/:z?
-  console.log(req.params);
   const id = req.params.id * 1; // Type coersion string->number
 
   const tour = tours.find((el) => el.id === id);
