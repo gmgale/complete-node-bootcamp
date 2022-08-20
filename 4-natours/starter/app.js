@@ -1,10 +1,11 @@
 const fs = require('fs');
 const express = require('express');
-
+const morgan = require('morgan');
 const app = express();
 
 // Middleware
 app.use(express.json());
+app.use(morgan('dev'));
 
 // Will be called on everyrequest, has to before the routing as the routes end the request/responce cycle.
 app.use((req, res, next) => {
@@ -22,6 +23,7 @@ const tours = JSON.parse(
   fs.readFileSync(`${__dirname}/dev-data/data/tours-simple.json`)
 );
 
+// Route handlers
 const getAllTours = (req, res) => {
   console.log(req.requestTime);
   res.status(200).json({
