@@ -80,7 +80,7 @@ const getTour = (req, res) => {
   });
 };
 
-updateTour = (req, res) => {
+const updateTour = (req, res) => {
   if (req.params.id * 1 > tours.length) {
     return res.status(200).json({
       status: 'fail',
@@ -164,29 +164,27 @@ const deleteUser = (req, res) => {
   });
 };
 
-// app.get('/api/v1/tours', getAllTours);
-// app.post('/api/v1/tours', createTour);
-// app.get('/api/v1/tours/:id', getTour);
-// app.patch('/api/v1/tours/:id', updateTour);
-// app.put('/api/v1/tours/:id', updateWholeTour);
-// app.delete('/api/v1/tours/:id', deleteTour);
+// Routes
+// Creatng sub-application tourRouter, which from the 'use' we can see is middleware.
+// Once the request hits it, if the URL matches it will be router to the below.
+const tourRouter = express.Router();
+const userRouter = express.Router();
 
-app.route('/api/v1/tours').get(getAllTours).post(createTour);
+// Mounting the routers
+app.use('/api/v1/tours', tourRouter);
+app.use('/api/v1/users', userRouter);
 
-app
-  .route('/api/v1/tours/:id')
+tourRouter.route('/').get(getAllTours).post(createTour);
+tourRouter
+  .route('/:id')
   .get(getTour)
   .patch(updateTour)
   .put(updateWholeTour)
   .delete(deleteTour);
 
-app.route('/api/v1/users').get(getAllUsers).post(createUser);
+userRouter.route('/').get(getAllUsers).post(createUser);
 
-app
-  .route('/api/v1/users/:id')
-  .get(getUser)
-  .patch(updateUser)
-  .delete(deleteUser);
+userRouter.route('/:id').get(getUser).patch(updateUser).delete(deleteUser);
 
 const port = 3000;
 app.listen(port, () => {
