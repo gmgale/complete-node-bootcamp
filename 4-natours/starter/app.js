@@ -5,9 +5,13 @@ const app = express();
 
 const tourRouter = require("./routes/tourRoutes");
 const userRouter = require("./routes/userRoutes");
+
 // Middleware to be run on every route
 app.use(express.json());
 app.use(morgan("dev"));
+
+// This is how we would serve static files without a route 
+app.use(express.static(`${__dirname}/public/`));
 
 // Will be called on every request, has to before the routing as the routes end the request/responce cycle.
 app.use((req, res, next) => {

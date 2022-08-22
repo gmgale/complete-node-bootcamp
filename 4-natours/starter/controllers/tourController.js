@@ -1,4 +1,5 @@
 const fs = require("fs");
+const { findSourceMap } = require("module");
 
 // Read data before event loop
 const tours = JSON.parse(
@@ -10,6 +11,16 @@ exports.checkId = (req, res, next, val) => {
 		return res.status(404).json({
 			status: "fail",
 			message: "Invalid ID",
+		});
+	}
+	next();
+};
+
+exports.checkBody = (req, res, next) => {
+	if (!req.body.name || !req.body.price) {
+		return res.status(400).json({
+			status: "400",
+			message: "Missing name or price.",
 		});
 	}
 	next();
