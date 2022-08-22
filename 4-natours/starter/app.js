@@ -7,7 +7,7 @@ const app = express();
 app.use(express.json());
 app.use(morgan('dev'));
 
-// Will be called on everyrequest, has to before the routing as the routes end the request/responce cycle.
+// Will be called on every request, has to before the routing as the routes end the request/responce cycle.
 app.use((req, res, next) => {
   console.log('Hello from the middleware!');
   next();
@@ -128,6 +128,42 @@ const deleteTour = (req, res) => {
   });
 };
 
+// User routes
+const getAllUsers = (req, res) => {
+  res.status(500).json({
+    status: 'error',
+    message: 'This route is not yet defined.',
+  });
+};
+
+const getUser = (req, res) => {
+  res.status(500).json({
+    status: 'error',
+    message: 'This route is not yet defined.',
+  });
+};
+
+const createUser = (req, res) => {
+  res.status(500).json({
+    status: 'error',
+    message: 'This route is not yet defined.',
+  });
+};
+
+const updateUser = (req, res) => {
+  res.status(500).json({
+    status: 'error',
+    message: 'This route is not yet defined.',
+  });
+};
+
+const deleteUser = (req, res) => {
+  res.status(500).json({
+    status: 'error',
+    message: 'This route is not yet defined.',
+  });
+};
+
 // app.get('/api/v1/tours', getAllTours);
 // app.post('/api/v1/tours', createTour);
 // app.get('/api/v1/tours/:id', getTour);
@@ -143,6 +179,14 @@ app
   .patch(updateTour)
   .put(updateWholeTour)
   .delete(deleteTour);
+
+app.route('/api/v1/users').get(getAllUsers).post(createUser);
+
+app
+  .route('/api/v1/users/:id')
+  .get(getUser)
+  .patch(updateUser)
+  .delete(deleteUser);
 
 const port = 3000;
 app.listen(port, () => {
