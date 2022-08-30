@@ -2,7 +2,28 @@ const Tour = require("../models/tourModels");
 
 exports.getAllTours = async (req, res) => {
   try {
-    const tours = await Tour.find();
+    // BUILD QUERY
+    // First get query object, if we await, we cant filter later
+    // 1) Filtering
+    const queryObj = Object.assign(req.query);
+    const excludedFields = ["page", "sort", "limit", "fields"];
+    excludedFields.forEach((el) => delete queryObj[el]);
+
+    // 2) Advanced filtering
+    // EXECUTE QUERY
+    let queryStr = JSON.stringify(queryObj);
+    // Replace the query identifiers from url to moggoose operators
+    queryStr = queryStr.replace(/\b(gt|gte|lt|lte)\b/g, (match) => `$${match}`);
+    const query = Tour.find(JSON.parse(queryStr));
+
+    const tours = await query;
+
+    // When we use the find method, it returns a Query object.
+    // This object has its own methods such as where, sort, less than...
+    //
+    // const query = await Tour.find()
+    // .where('duration')
+    // .equals(5)
 
     res.status(200).json({
       status: "success",
@@ -12,6 +33,7 @@ exports.getAllTours = async (req, res) => {
     console.log(err);
   }
 };
+
 exports.createTour = async (req, res) => {
   try {
     const newTour = await Tour.create(req.body);
