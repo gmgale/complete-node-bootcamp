@@ -12,10 +12,20 @@ exports.getAllTours = async (req, res) => {
     // 2) Advanced filtering
     // EXECUTE QUERY
     let queryStr = JSON.stringify(queryObj);
-    // Replace the query identifiers from url to moggoose operators
+    // Replace the query identifiers from url to moggoose operators.
     queryStr = queryStr.replace(/\b(gt|gte|lt|lte)\b/g, (match) => `$${match}`);
     const query = Tour.find(JSON.parse(queryStr));
 
+    // 3) Sorting
+    if (req.query.sort) {
+      // Will be sort=price in url, sort here will be price.
+      // sort(price,ratingsAverage)
+      const sortBy = req.query.sort.split(",").join(" ");
+      query.sort(sortBy);
+    } else {
+      // Default sort (desc created at)
+      query.sort("-createdAt");
+    }
     const tours = await query;
 
     // When we use the find method, it returns a Query object.
